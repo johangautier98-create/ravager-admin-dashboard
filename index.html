@@ -1,313 +1,411 @@
 ﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RAVAGER - Admin Reassorts</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#04060d;color:#e6e8ee;min-height:100vh}
-    #login{display:flex;align-items:center;justify-content:center;min-height:100vh}
-    .login-box{background:#0a0d18;border:1px solid rgba(255,42,127,.25);border-radius:20px;padding:40px 36px;width:100%;max-width:380px;text-align:center;box-shadow:0 0 60px rgba(255,42,127,.12)}
-    .login-logo{font-size:28px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;background:linear-gradient(135deg,#fff 30%,#ff2a7f 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
-    .login-sub{color:#8b90a0;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:28px}
-    .login-input{width:100%;padding:13px 16px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;font-size:14px;color:#fff;outline:none;margin-bottom:12px;font-family:inherit}
-    .login-input:focus{border-color:#ff2a7f}
-    .login-btn{width:100%;padding:14px;background:linear-gradient(135deg,#ff2a7f,#ff5e3a);border:none;border-radius:10px;font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#fff;cursor:pointer}
-    .login-btn:hover{filter:brightness(1.1)}
-    .login-err{color:#f87171;font-size:12px;margin-top:8px;display:none}
-    #app{display:none}
-    .header{background:#0a0d18;border-bottom:1px solid rgba(255,255,255,.08);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-    .header-logo{font-size:18px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;background:linear-gradient(135deg,#fff 30%,#ff2a7f 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .header-sub{font-size:11px;color:#8b90a0;letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
-    .header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .btn-h{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.06em}
-    .btn-refresh{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff}
-    .btn-refresh:hover{background:rgba(255,255,255,.1)}
-    .btn-logout{background:rgba(255,42,127,.1);border:1px solid rgba(255,42,127,.3);color:#ff2a7f}
-    .btn-logout:hover{background:rgba(255,42,127,.18)}
-    .content{padding:28px;max-width:1280px;margin:0 auto}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
-    .stat-card{background:#0a0d18;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 20px}
-    .stat-num{font-size:32px;font-weight:900;color:#fff;line-height:1}
-    .stat-label{font-size:11px;color:#8b90a0;letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
-    .stat-card.accent{border-color:rgba(255,42,127,.3)}
-    .stat-card.accent .stat-num{color:#ff2a7f}
-    .tabs{display:flex;gap:2px;margin-bottom:22px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:3px;width:fit-content}
-    .tab{padding:9px 22px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#8b90a0;border:none;background:none;font-family:inherit}
-    .tab.is-active{background:rgba(255,42,127,.12);color:#fff}
-    .coloris-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-    .coloris-card{background:#0a0d18;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}
-    .coloris-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-    .coloris-name{font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff}
-    .coloris-count{background:rgba(255,42,127,.12);border:1px solid rgba(255,42,127,.3);color:#ff2a7f;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px}
-    .coloris-count.all-done{background:rgba(22,163,74,.1);border-color:rgba(22,163,74,.3);color:#16a34a}
-    .coloris-meta{font-size:10px;color:#8b90a0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
-    .coloris-emails{font-size:11px;color:#8b90a0;margin-bottom:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .coloris-actions{display:flex;gap:8px}
-    .btn-bcc{flex:1;padding:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;font-family:inherit;text-align:center}
-    .btn-bcc:hover{background:rgba(255,255,255,.1)}
-    .btn-notify{flex:1;padding:9px;background:linear-gradient(135deg,#ff2a7f,#ff5e3a);border:none;border-radius:8px;color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;font-family:inherit;text-align:center}
-    .btn-notify:hover{filter:brightness(1.1)}
-    .btn-notify.done{background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);color:#16a34a}
-    .filter-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-    .filter-input{padding:10px 14px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-size:13px;font-family:inherit;outline:none;flex:1;min-width:180px}
-    .filter-input:focus{border-color:#ff2a7f}
-    .filter-select{padding:10px 14px;background:#0a0d18;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-size:13px;font-family:inherit;outline:none;cursor:pointer}
-    table{width:100%;border-collapse:collapse}
-    thead th{background:rgba(255,255,255,.04);padding:10px 14px;text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8b90a0;font-weight:700;border-bottom:1px solid rgba(255,255,255,.06)}
-    tbody tr{border-bottom:1px solid rgba(255,255,255,.04)}
-    tbody tr:hover{background:rgba(255,255,255,.02)}
-    tbody td{padding:11px 14px;font-size:13px;color:#e6e8ee;vertical-align:middle}
-    .td-date{color:#8b90a0;font-size:11px}
-    .badge{display:inline-flex;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700}
-    .badge-pending{background:rgba(255,42,127,.1);color:#ff2a7f;border:1px solid rgba(255,42,127,.25)}
-    .badge-done{background:rgba(22,163,74,.1);color:#16a34a;border:1px solid rgba(22,163,74,.25)}
-    .row-actions{display:flex;gap:6px}
-    .btn-row{padding:5px 10px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer;font-family:inherit;white-space:nowrap}
-    .btn-check{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);color:#16a34a}
-    .btn-check:hover{background:rgba(22,163,74,.2)}
-    .btn-del{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.25);color:#f87171}
-    .btn-del:hover{background:rgba(220,38,38,.2)}
-    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center;padding:20px}
-    .modal-overlay.is-open{display:flex}
-    .modal-box{background:#0e1120;border:1px solid rgba(255,42,127,.25);border-radius:20px;padding:32px 28px 26px;max-width:640px;width:100%;position:relative;max-height:90vh;overflow-y:auto}
-    .modal-title{font-size:18px;font-weight:900;color:#fff;margin-bottom:6px}
-    .modal-sub{font-size:12px;color:#8b90a0;margin-bottom:20px}
-    .modal-x{position:absolute;top:14px;right:14px;width:32px;height:32px;background:rgba(255,255,255,.07);border:none;border-radius:50%;color:#aaa;font-size:18px;cursor:pointer;display:grid;place-items:center}
-    .modal-x:hover{background:rgba(255,255,255,.15);color:#fff}
-    .modal-label{font-size:11px;color:#8b90a0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;margin-top:14px}
-    .modal-bcc-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:12px;color:#e6e8ee;word-break:break-all;max-height:80px;overflow-y:auto;line-height:1.6}
-    .modal-input{width:100%;padding:11px 13px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;color:#fff;outline:none;font-family:inherit}
-    .modal-input:focus{border-color:#ff2a7f}
-    textarea.modal-input{resize:vertical;min-height:130px;line-height:1.6}
-    .modal-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
-    .btn-modal{flex:1;padding:12px;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:inherit;min-width:130px}
-    .btn-gmail{background:linear-gradient(135deg,#ff2a7f,#ff5e3a);border:none;color:#fff}
-    .btn-gmail:hover{filter:brightness(1.1)}
-    .btn-copy-bcc{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff}
-    .btn-copy-bcc:hover{background:rgba(255,255,255,.1)}
-    .btn-mark-all{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.3);color:#16a34a}
-    .btn-mark-all:hover{background:rgba(22,163,74,.18)}
-    .loading{text-align:center;padding:48px;color:#8b90a0;font-size:14px}
-    .toast{position:fixed;bottom:24px;right:24px;background:#0e1120;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 18px;font-size:13px;color:#fff;box-shadow:0 8px 30px rgba(0,0,0,.5);z-index:9999;transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none}
-    .toast.show{transform:none;opacity:1}
-    @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.content{padding:14px}.modal-actions{flex-direction:column}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAVAGER Admin</title>
+<style>
+:root{--bg:#0f1117;--card:#1a1d27;--border:#2a2d3e;--accent:#e8a020;--text:#e2e8f0;--muted:#64748b;--danger:#ef4444;--success:#22c55e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+#gate{min-height:100vh;display:flex;align-items:center;justify-content:center}
+.gate-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:40px;width:360px;text-align:center}
+.gate-card h1{font-size:24px;margin-bottom:8px}
+.gate-card p{color:var(--muted);margin-bottom:24px;font-size:14px}
+input[type=password],input[type=text],textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 14px;font-size:14px;outline:none;transition:border-color .2s}
+input:focus,textarea:focus{border-color:var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:8px;border:none;font-size:14px;font-weight:500;cursor:pointer;transition:opacity .2s}
+.btn:hover{opacity:.85}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:#000}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-copy{background:#1e293b;border:1px solid var(--border);color:var(--text)}
+#app-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);background:var(--card)}
+.logo{font-size:18px;font-weight:700}
+#app-body{padding:24px;max-width:1200px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px}
+.stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat-value{font-size:28px;font-weight:700;margin-top:4px}
+.section-title{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px}
+.matrix-wrapper{overflow-x:auto}
+.matrix-table{border-collapse:separate;border-spacing:6px}
+.matrix-table th{font-size:13px;font-weight:600;padding:8px 16px;text-align:center;color:var(--muted);white-space:nowrap}
+.matrix-table td{padding:0}
+.color-th-inner{display:flex;align-items:center;justify-content:center;gap:6px}
+.color-dot{display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.matrix-cell{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .15s;width:100%;min-width:90px}
+.matrix-cell:hover{border-color:var(--accent);transform:translateY(-2px)}
+.matrix-cell.empty{opacity:.25;cursor:default;pointer-events:none}
+.cell-count{font-size:26px;font-weight:700;line-height:1}
+.cell-count.hot{color:var(--accent)}
+.cell-label{font-size:11px;color:var(--muted);margin-top:4px}
+.size-label{font-size:15px;font-weight:600;text-align:right;padding-right:10px;white-space:nowrap;color:var(--text)}
+dialog{background:var(--card);border:1px solid var(--border);border-radius:14px;color:var(--text);max-width:580px;width:92vw;padding:0}
+dialog::backdrop{background:rgba(0,0,0,.75)}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border)}
+.modal-title{font-size:20px;font-weight:700}
+.modal-sub{font-size:13px;color:var(--muted);margin-top:3px}
+.close-btn{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;padding:0 0 0 12px;flex-shrink:0}
+.modal-body{padding:20px 24px;display:flex;flex-direction:column;gap:18px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.block-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.customer-list{background:var(--bg);border:1px solid var(--border);border-radius:8px;max-height:180px;overflow-y:auto}
+.customer-row{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);font-size:13px;gap:12px}
+.customer-row:last-child{border-bottom:none}
+.c-name{font-weight:500;white-space:nowrap}
+.c-email{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bcc-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--muted);word-break:break-all;max-height:60px;overflow-y:auto;line-height:1.6}
+.tpl-box{position:relative}
+.tpl-box textarea{min-height:160px;resize:vertical;font-size:13px;line-height:1.7}
+#toast{position:fixed;bottom:24px;right:24px;background:var(--success);color:#000;padding:12px 20px;border-radius:8px;font-size:14px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999}
+#toast.show{opacity:1}
+.empty-state{text-align:center;padding:48px;color:var(--muted)}
+</style>
 </head>
 <body>
-<div id="login">
-  <div class="login-box">
-    <div class="login-logo">RAVAGER</div>
-    <div class="login-sub">Admin &middot; Demandes de reassort</div>
-    <input type="password" id="pwd-input" class="login-input" placeholder="Mot de passe" autocomplete="current-password">
-    <button class="login-btn" onclick="tryLogin()">Acceder au tableau de bord</button>
-    <div class="login-err" id="login-err">Mot de passe incorrect.</div>
+
+<div id="gate">
+  <div class="gate-card">
+    <h1><span style="color:#e8a020">RAVAGER</span> Admin</h1>
+    <p>Gestion des demandes de réassort</p>
+    <input type="password" id="pw" placeholder="Mot de passe" style="margin-bottom:12px" onkeydown="if(event.key==='Enter')checkPw()">
+    <div id="pw-err" style="color:#ef4444;font-size:13px;margin-bottom:12px;min-height:18px"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="checkPw()">Accéder</button>
   </div>
 </div>
-<div id="app">
-  <div class="header">
-    <div><div class="header-logo">RAVAGER</div><div class="header-sub">Admin &middot; Demandes de reassort</div></div>
-    <div class="header-right">
-      <span style="font-size:11px;color:#8b90a0" id="last-refresh"></span>
-      <button class="btn-h btn-refresh" onclick="loadData()">&#8635; Actualiser</button>
-      <button class="btn-h btn-logout" onclick="logout()">Deconnexion</button>
+
+<div id="app" hidden>
+  <header id="app-header">
+    <div class="logo"><span style="color:#e8a020">RAVAGER</span> Admin &mdash; Réassorts</div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn btn-ghost" onclick="loadData()">&#x21BA; Actualiser</button>
+      <button class="btn btn-ghost" onclick="logout()">Déconnexion</button>
     </div>
-  </div>
-  <div class="content">
-    <div class="stats">
-      <div class="stat-card"><div class="stat-num" id="stat-total">-</div><div class="stat-label">Demandes totales</div></div>
-      <div class="stat-card accent"><div class="stat-num" id="stat-pending">-</div><div class="stat-label">A notifier</div></div>
-      <div class="stat-card"><div class="stat-num" id="stat-coloris">-</div><div class="stat-label">Coloris en rupture</div></div>
-      <div class="stat-card"><div class="stat-num" id="stat-today">-</div><div class="stat-label">Aujourd'hui</div></div>
-    </div>
-    <div class="tabs">
-      <button class="tab is-active" id="tab-btn-coloris" onclick="switchTab('coloris')">Par coloris</button>
-      <button class="tab" id="tab-btn-all" onclick="switchTab('all')">Toutes les demandes</button>
-    </div>
-    <div id="tab-coloris"><div class="coloris-grid" id="coloris-grid"><div class="loading">Chargement...</div></div></div>
-    <div id="tab-all" style="display:none">
-      <div class="filter-row">
-        <input type="text" class="filter-input" id="filter-search" placeholder="Rechercher..." oninput="renderTable()">
-        <select class="filter-select" id="filter-status" onchange="renderTable()">
-          <option value="">Tous statuts</option><option value="pending">A notifier</option><option value="done">Notifies</option>
-        </select>
-        <select class="filter-select" id="filter-produit" onchange="renderTable()">
-          <option value="">Tous produits</option><option value="SHAD">SHAD</option><option value="Corps souple">Corps souple</option><option value="Tete plombee">Tete plombee</option>
-        </select>
-      </div>
-      <div id="table-wrap"><div class="loading">Chargement...</div></div>
-    </div>
+  </header>
+  <div id="app-body">
+    <div id="stats" class="stats-grid"></div>
+    <div class="section-title">Demandes par taille et coloris — cliquer sur une case</div>
+    <div class="matrix-wrapper" id="matrix"></div>
   </div>
 </div>
-<div class="modal-overlay" id="notify-modal" onclick="if(event.target===this)closeModal()">
-  <div class="modal-box">
-    <button class="modal-x" onclick="closeModal()">x</button>
-    <div class="modal-title">Notifier &mdash; <span id="modal-coloris-name"></span></div>
-    <div class="modal-sub" id="modal-sub"></div>
-    <div class="modal-label">Adresses BCC</div>
-    <div class="modal-bcc-box" id="modal-bcc-text"></div>
-    <div class="modal-label">Sujet</div>
-    <input type="text" class="modal-input" id="modal-subject">
-    <div class="modal-label">Message</div>
-    <textarea class="modal-input" id="modal-body"></textarea>
-    <div class="modal-actions">
-      <button class="btn-modal btn-copy-bcc" onclick="copyBcc()">Copier BCC</button>
-      <button class="btn-modal btn-gmail" onclick="openGmail()">Ouvrir Gmail</button>
-      <button class="btn-modal btn-mark-all" onclick="markAllNotified()">Marquer tous notifies</button>
+
+<dialog id="dlg">
+  <div class="modal-header">
+    <div>
+      <div class="modal-title" id="dlg-title"></div>
+      <div class="modal-sub" id="dlg-sub"></div>
+    </div>
+    <button class="close-btn" onclick="document.getElementById('dlg').close()">&#x2715;</button>
+  </div>
+  <div class="modal-body">
+    <div>
+      <div class="block-label">Clients en attente</div>
+      <div class="customer-list" id="dlg-customers"></div>
+    </div>
+    <div>
+      <div class="block-label">Adresses email (BCC)</div>
+      <div class="bcc-box" id="dlg-bcc"></div>
+      <button class="btn btn-copy" style="margin-top:8px;font-size:13px" onclick="copyBcc()">&#x2398; Copier les emails BCC</button>
+    </div>
+    <div class="tpl-box">
+      <div class="block-label">Email type &mdash; remplace [NOMBRE] avant d'envoyer</div>
+      <textarea id="dlg-tpl"></textarea>
+      <button class="btn btn-copy" style="margin-top:8px;font-size:13px" onclick="copyTpl()">&#x2398; Copier le message</button>
     </div>
   </div>
-</div>
-<div class="toast" id="toast"></div>
+  <div class="modal-footer">
+    <button class="btn btn-ghost" onclick="document.getElementById('dlg').close()">Fermer</button>
+    <button class="btn btn-danger" id="dlg-del">&#x1F5D1; Supprimer ces demandes</button>
+  </div>
+</dialog>
+
+<div id="toast"></div>
+
 <script>
-var SB_URL='https://xvyilbmlfvgriicpawex.supabase.co';
-var SB_KEY='sb_publishable_-o9r10Tuo6Qu6v2xNkPLMQ_EL_xUpCF';
-var PWD='ravager2026';
-var SB_HDR={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
-var allData=[];var modalIds=[];
-function tryLogin(){
-  if(document.getElementById('pwd-input').value===PWD){sessionStorage.setItem('rv_admin','1');document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';loadData();}
-  else{document.getElementById('login-err').style.display='block';}
+var SB_URL = 'https://xvyilbmlfvgriicpawex.supabase.co';
+var SB_KEY = 'sb_publishable_-o9r10Tuo6Qu6v2xNkPLMQ_EL_xUpCF';
+var PWD = 'ravager2026';
+var data = [];
+var curIds = [];
+
+var COLORS = {
+  'rose':['#f472b6','#f9a8d4'],'pink':['#f472b6','#f9a8d4'],
+  'bleu':['#3b82f6','#93c5fd'],'blue':['#3b82f6','#93c5fd'],'chartreuse':['#3b82f6','#93c5fd'],
+  'violet':['#8b5cf6','#c4b5fd'],'purple':['#8b5cf6','#c4b5fd'],
+  'rouge':['#ef4444','#fca5a5'],'red':['#ef4444','#fca5a5'],
+  'vert':['#22c55e','#86efac'],'green':['#22c55e','#86efac'],
+  'jaune':['#f59e0b','#fcd34d'],'yellow':['#f59e0b','#fcd34d'],
+  'orange':['#f97316','#fdba74'],
+  'blanc':['#cbd5e1','#f1f5f9'],'white':['#cbd5e1','#f1f5f9'],
+  'noir':['#475569','#94a3b8'],'black':['#475569','#94a3b8']
+};
+
+function getColor(c){
+  var k=(c||'').toLowerCase();
+  for(var n in COLORS){if(k.indexOf(n)>=0)return COLORS[n];}
+  return['#64748b','#94a3b8'];
 }
-document.getElementById('pwd-input').addEventListener('keydown',function(e){if(e.key==='Enter')tryLogin();});
-function logout(){sessionStorage.removeItem('rv_admin');document.getElementById('login').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('pwd-input').value='';}
-function loadData(){
-  fetch(SB_URL+'/rest/v1/restock_requests?select=*&order=created_at.desc',{headers:SB_HDR})
-    .then(function(r){return r.json();})
-    .then(function(data){
-      allData=Array.isArray(data)?data:[];
-      updateStats();renderColorisGrid();renderTable();
-      var now=new Date();document.getElementById('last-refresh').textContent='Actualise '+now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-    }).catch(function(e){showToast('Erreur Supabase: '+e.message,true);});
+
+function checkPw(){
+  if(document.getElementById('pw').value===PWD){
+    document.getElementById('gate').style.display='none';
+    document.getElementById('app').hidden=false;
+    loadData();
+  } else {
+    document.getElementById('pw-err').textContent='Mot de passe incorrect';
+  }
 }
-function updateStats(){
-  var total=allData.length,pending=allData.filter(function(r){return !r.notifie;}).length;
+
+function logout(){
+  document.getElementById('gate').style.display='flex';
+  document.getElementById('app').hidden=true;
+  document.getElementById('pw').value='';
+}
+
+async function loadData(){
+  var m=document.getElementById('matrix');
+  m.textContent='';
+  var loading=document.createElement('div');
+  loading.className='empty-state';
+  loading.textContent='Chargement...';
+  m.appendChild(loading);
+  try{
+    var r=await fetch(SB_URL+'/rest/v1/restock_requests?notifie=eq.false&order=created_at.asc',{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
+    data=await r.json();
+    renderStats();
+    renderMatrix();
+  }catch(e){
+    m.textContent='';
+    var err=document.createElement('div');
+    err.className='empty-state';
+    err.textContent='Erreur de connexion. Vérifie ta connexion internet.';
+    m.appendChild(err);
+  }
+}
+
+function renderStats(){
   var today=new Date().toISOString().slice(0,10);
-  var todayCnt=allData.filter(function(r){return r.created_at&&r.created_at.slice(0,10)===today;}).length;
-  var cset={};allData.filter(function(r){return !r.notifie;}).forEach(function(r){cset[(r.coloris||'?')+'|'+(r.produit||'')]=1;});
-  document.getElementById('stat-total').textContent=total;document.getElementById('stat-pending').textContent=pending;
-  document.getElementById('stat-coloris').textContent=Object.keys(cset).length;document.getElementById('stat-today').textContent=todayCnt;
-}
-function renderColorisGrid(){
-  var grid=document.getElementById('coloris-grid');
-  var groups={};
-  allData.forEach(function(r){var k=(r.coloris||'?')+'||'+(r.produit||'SHAD');if(!groups[k])groups[k]={coloris:r.coloris||'?',produit:r.produit||'SHAD',rows:[]};groups[k].rows.push(r);});
-  var keys=Object.keys(groups).sort();
-  while(grid.firstChild)grid.removeChild(grid.firstChild);
-  if(!keys.length){var m=document.createElement('div');m.style.cssText='color:#8b90a0;text-align:center;padding:40px;grid-column:1/-1';m.textContent='Aucune demande.';grid.appendChild(m);return;}
-  keys.forEach(function(key){
-    var g=groups[key];
-    var pending=g.rows.filter(function(r){return !r.notifie;});
-    var allDone=pending.length===0;
-    var emailList=[];var seen={};g.rows.forEach(function(r){if(r.email&&!seen[r.email]){emailList.push(r.email);seen[r.email]=1;}});
-    var emailsStr=emailList.join(', ');
-    var card=document.createElement('div');card.className='coloris-card';
-    var head=document.createElement('div');head.className='coloris-card-head';
-    var nm=document.createElement('div');nm.className='coloris-name';nm.textContent=g.coloris;
-    var cnt=document.createElement('div');cnt.className='coloris-count'+(allDone?' all-done':'');
-    cnt.textContent=allDone?'Tous notifies':pending.length+' en attente';
-    head.appendChild(nm);head.appendChild(cnt);
-    var meta=document.createElement('div');meta.className='coloris-meta';meta.textContent=g.produit+' - '+g.rows.length+' demande'+(g.rows.length>1?'s':'');
-    var ems=document.createElement('div');ems.className='coloris-emails';ems.title=emailsStr;ems.textContent=emailsStr.length>60?emailsStr.slice(0,57)+'...':(emailsStr||'Aucun email');
-    var acts=document.createElement('div');acts.className='coloris-actions';
-    var bBtn=document.createElement('button');bBtn.className='btn-bcc';bBtn.textContent='Copier BCC';
-    (function(em){bBtn.onclick=function(){copyClip(em.join(','),'BCC copie !');};} )(emailList);
-    var nBtn=document.createElement('button');nBtn.className='btn-notify'+(allDone?' done':'');nBtn.textContent=allDone?'Deja notifies':'Notifier';
-    (function(c,p,rows){nBtn.onclick=function(){openNotifyModal(c,p,rows);};} )(g.coloris,g.produit,g.rows);
-    acts.appendChild(bBtn);acts.appendChild(nBtn);
-    card.appendChild(head);card.appendChild(meta);card.appendChild(ems);card.appendChild(acts);grid.appendChild(card);
+  var todayN=data.filter(function(r){return r.created_at&&r.created_at.slice(0,10)===today;}).length;
+  var colorsSet=new Set(data.map(function(r){return r.coloris;}));
+  var combosSet=new Set(data.map(function(r){return r.taille+'|'+r.coloris;}));
+  var items=[
+    {label:'Total demandes',val:data.length},
+    {label:'À notifier',val:data.length},
+    {label:'Combos en rupture',val:combosSet.size},
+    {label:"Aujourd'hui",val:todayN}
+  ];
+  var c=document.getElementById('stats');
+  c.textContent='';
+  items.forEach(function(s){
+    var card=document.createElement('div');
+    card.className='stat-card';
+    var lbl=document.createElement('div');
+    lbl.className='stat-label';
+    lbl.textContent=s.label;
+    var val=document.createElement('div');
+    val.className='stat-value';
+    val.textContent=s.val;
+    card.appendChild(lbl);
+    card.appendChild(val);
+    c.appendChild(card);
   });
 }
-function renderTable(){
-  var wrap=document.getElementById('table-wrap');
-  var search=(document.getElementById('filter-search').value||'').toLowerCase();
-  var status=document.getElementById('filter-status').value;
-  var produit=document.getElementById('filter-produit').value;
-  var rows=allData.filter(function(r){
-    if(search){var h=((r.prenom||'')+' '+(r.nom||'')+' '+(r.email||'')+' '+(r.coloris||'')).toLowerCase();if(h.indexOf(search)<0)return false;}
-    if(status==='pending'&&r.notifie)return false;if(status==='done'&&!r.notifie)return false;
-    if(produit&&r.produit!==produit)return false;return true;
+
+function renderMatrix(){
+  var sizesSet=new Set();
+  var colorsSet=new Set();
+  data.forEach(function(r){
+    if(r.taille)sizesSet.add(r.taille);
+    if(r.coloris)colorsSet.add(r.coloris);
   });
-  while(wrap.firstChild)wrap.removeChild(wrap.firstChild);
-  if(!rows.length){var m=document.createElement('div');m.style.cssText='color:#8b90a0;text-align:center;padding:40px';m.textContent='Aucun resultat.';wrap.appendChild(m);return;}
+
+  var sizes=[...sizesSet].sort(function(a,b){
+    var na=parseInt((a||'').replace(/\D/g,''))||0;
+    var nb=parseInt((b||'').replace(/\D/g,''))||0;
+    return na-nb;
+  });
+  var colors=[...colorsSet].sort();
+
+  var m=document.getElementById('matrix');
+  m.textContent='';
+
+  if(sizes.length===0){
+    var es=document.createElement('div');
+    es.className='empty-state';
+    es.textContent='Aucune demande en attente. 🎉';
+    m.appendChild(es);
+    return;
+  }
+
+  var countMap={};
+  data.forEach(function(r){
+    var k=(r.taille||'')+'|||'+(r.coloris||'');
+    countMap[k]=(countMap[k]||0)+1;
+  });
+
   var tbl=document.createElement('table');
-  var thead=document.createElement('thead');var htr=document.createElement('tr');
-  ['Date','Prenom / Nom','Email','Coloris','Produit','Taille','Statut','Actions'].forEach(function(h){var th=document.createElement('th');th.textContent=h;htr.appendChild(th);});
-  thead.appendChild(htr);tbl.appendChild(thead);
-  var tbody=document.createElement('tbody');
-  rows.forEach(function(r){
-    var tr=document.createElement('tr');
-    var dt=r.created_at?new Date(r.created_at):null;
-    var dtStr=dt?dt.toLocaleDateString('fr-FR')+' '+dt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):'--';
-    var fns=[
-      function(td){td.className='td-date';td.textContent=dtStr;},
-      function(td){td.textContent=([r.prenom,r.nom].filter(Boolean).join(' '))||'--';},
-      function(td){td.textContent=r.email||'--';},
-      function(td){var s=document.createElement('strong');s.textContent=r.coloris||'--';td.appendChild(s);},
-      function(td){td.textContent=r.produit||'SHAD';},
-      function(td){td.textContent=r.taille||'--';},
-      function(td){var b=document.createElement('span');b.className='badge '+(r.notifie?'badge-done':'badge-pending');b.textContent=r.notifie?'Notifie':'En attente';td.appendChild(b);},
-      function(td){
-        var div=document.createElement('div');div.className='row-actions';
-        if(!r.notifie){var c=document.createElement('button');c.className='btn-row btn-check';c.textContent='Notifie';(function(id){c.onclick=function(){markNotified(id);};})(r.id);div.appendChild(c);}
-        var d=document.createElement('button');d.className='btn-row btn-del';d.textContent='Suppr.';(function(id){d.onclick=function(){deleteRow(id);};})(r.id);div.appendChild(d);td.appendChild(div);
-      }
-    ];
-    fns.forEach(function(fn){var td=document.createElement('td');fn(td);tr.appendChild(td);});tbody.appendChild(tr);
+  tbl.className='matrix-table';
+
+  // Header
+  var thead=document.createElement('thead');
+  var hrow=document.createElement('tr');
+  var corner=document.createElement('th');
+  corner.textContent='';
+  hrow.appendChild(corner);
+
+  colors.forEach(function(color){
+    var th=document.createElement('th');
+    var inner=document.createElement('div');
+    inner.className='color-th-inner';
+    var dot=document.createElement('span');
+    dot.className='color-dot';
+    dot.style.background=getColor(color)[0];
+    inner.appendChild(dot);
+    inner.appendChild(document.createTextNode(color));
+    th.appendChild(inner);
+    hrow.appendChild(th);
   });
-  tbl.appendChild(tbody);wrap.appendChild(tbl);
+  thead.appendChild(hrow);
+  tbl.appendChild(thead);
+
+  // Body
+  var tbody=document.createElement('tbody');
+  sizes.forEach(function(size){
+    var tr=document.createElement('tr');
+    var sizeCell=document.createElement('td');
+    sizeCell.className='size-label';
+    sizeCell.textContent=size;
+    tr.appendChild(sizeCell);
+
+    colors.forEach(function(color){
+      var k=size+'|||'+color;
+      var cnt=countMap[k]||0;
+      var td=document.createElement('td');
+      var btn=document.createElement('button');
+      btn.className='matrix-cell'+(cnt===0?' empty':'');
+
+      var cntDiv=document.createElement('div');
+      cntDiv.className='cell-count'+(cnt>0?' hot':'');
+      cntDiv.textContent=cnt;
+
+      var lblDiv=document.createElement('div');
+      lblDiv.className='cell-label';
+      lblDiv.textContent=cnt===1?'demande':'demandes';
+
+      btn.appendChild(cntDiv);
+      btn.appendChild(lblDiv);
+
+      if(cnt>0){
+        (function(s,c){
+          btn.addEventListener('click',function(){openModal(s,c);});
+        })(size,color);
+      }
+      td.appendChild(btn);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+  m.appendChild(tbl);
 }
-function openNotifyModal(coloris,produit,rows){
-  var pending=rows.filter(function(r){return !r.notifie;});
-  var emailList=[];var seen={};rows.forEach(function(r){if(r.email&&!seen[r.email]){emailList.push(r.email);seen[r.email]=1;}});
-  modalIds=pending.map(function(r){return r.id;});
-  document.getElementById('modal-coloris-name').textContent=coloris+' ('+produit+')';
-  document.getElementById('modal-sub').textContent=emailList.length+' destinataire'+(emailList.length>1?'s':'')+' - '+pending.length+' encore en attente';
-  document.getElementById('modal-bcc-text').textContent=emailList.join(', ');
-  document.getElementById('modal-subject').value='RAVAGER - Coloris '+coloris+' de retour en stock !';
-  document.getElementById('modal-body').value='Bonjour,\n\nBonne nouvelle ! Le coloris '+coloris+' que vous attendiez est a nouveau disponible.\n\nCommandez maintenant : https://ravager-1041.myshopify.com\n\nStocks limites - soyez rapide !\n\nL\'equipe RAVAGER';
-  document.getElementById('notify-modal').classList.add('is-open');
+
+function openModal(size, color){
+  var customers=data.filter(function(r){return r.taille===size&&r.coloris===color;});
+  curIds=customers.map(function(r){return r.id;});
+
+  // Title
+  var titleEl=document.getElementById('dlg-title');
+  titleEl.textContent='';
+  var dot=document.createElement('span');
+  dot.className='color-dot';
+  dot.style.background=getColor(color)[0];
+  dot.style.marginRight='8px';
+  dot.style.verticalAlign='middle';
+  titleEl.appendChild(dot);
+  titleEl.appendChild(document.createTextNode(size+' — '+color));
+
+  var subEl=document.getElementById('dlg-sub');
+  subEl.textContent=customers.length+' client'+(customers.length>1?'s':'')+' en attente';
+
+  // Customer list
+  var list=document.getElementById('dlg-customers');
+  list.textContent='';
+  customers.forEach(function(c){
+    var row=document.createElement('div');
+    row.className='customer-row';
+    var nm=document.createElement('span');
+    nm.className='c-name';
+    nm.textContent=((c.prenom||'')+' '+(c.nom||'')).trim()||'—';
+    var em=document.createElement('span');
+    em.className='c-email';
+    em.textContent=c.email||'';
+    row.appendChild(nm);
+    row.appendChild(em);
+    list.appendChild(row);
+  });
+
+  // BCC
+  var bcc=customers.map(function(c){return c.email;}).filter(Boolean).join(', ');
+  document.getElementById('dlg-bcc').textContent=bcc;
+
+  // Template
+  document.getElementById('dlg-tpl').value=buildTemplate(size,color);
+
+  // Delete btn
+  document.getElementById('dlg-del').onclick=function(){deleteReqs(curIds);};
+
+  document.getElementById('dlg').showModal();
 }
-function closeModal(){document.getElementById('notify-modal').classList.remove('is-open');}
-function copyBcc(){copyClip(document.getElementById('modal-bcc-text').textContent,'BCC copie !');}
-function openGmail(){
-  var bcc=document.getElementById('modal-bcc-text').textContent;
-  var sub=encodeURIComponent(document.getElementById('modal-subject').value);
-  var body=encodeURIComponent(document.getElementById('modal-body').value);
-  var emails=bcc.split(',').map(function(e){return e.trim();}).filter(Boolean);
-  window.open('https://mail.google.com/mail/?view=cm&bcc='+encodeURIComponent(emails.join(','))+'&su='+sub+'&body='+body,'_blank');
+
+function buildTemplate(taille, coloris){
+  return 'Bonjour,\n\nBonne nouvelle !\n\nLe leurre souple RAVAGER coloris '+coloris+' taille '+taille+' vient d\'être réapprovisionné.\n\nIl ne reste que [NOMBRE] exemplaires en stock — première commande, première servie !\n\nNe tardez pas, ça part vite.\n\n👉 Commander maintenant : https://ravager-1041.myshopify.com\n\nBonne pêche,\nL\'équipe RAVAGER';
 }
-function markAllNotified(){
-  if(!modalIds.length){showToast('Tous deja notifies.');return;}
-  var now=new Date().toISOString();
-  var ps=modalIds.map(function(id){return fetch(SB_URL+'/rest/v1/restock_requests?id=eq.'+id,{method:'PATCH',headers:SB_HDR,body:JSON.stringify({notifie:true,notifie_at:now})});});
-  Promise.all(ps).then(function(){showToast(modalIds.length+' marque'+(modalIds.length>1?'s':'')+' notifie'+(modalIds.length>1?'s':'')+' !');closeModal();loadData();}).catch(function(e){showToast('Erreur: '+e.message,true);});
+
+function copyBcc(){
+  var t=document.getElementById('dlg-bcc').textContent;
+  navigator.clipboard.writeText(t).then(function(){showToast('Emails copiés !');});
 }
-function markNotified(id){
-  fetch(SB_URL+'/rest/v1/restock_requests?id=eq.'+id,{method:'PATCH',headers:SB_HDR,body:JSON.stringify({notifie:true,notifie_at:new Date().toISOString()})})
-    .then(function(){showToast('Marque notifie !');loadData();}).catch(function(e){showToast('Erreur: '+e.message,true);});
+
+function copyTpl(){
+  var t=document.getElementById('dlg-tpl').value;
+  navigator.clipboard.writeText(t).then(function(){showToast('Message copié !');});
 }
-function deleteRow(id){
-  if(!confirm('Supprimer cette demande ?'))return;
-  fetch(SB_URL+'/rest/v1/restock_requests?id=eq.'+id,{method:'DELETE',headers:SB_HDR})
-    .then(function(){showToast('Supprime.');loadData();}).catch(function(e){showToast('Erreur: '+e.message,true);});
+
+async function deleteReqs(ids){
+  if(!ids.length)return;
+  var btn=document.getElementById('dlg-del');
+  btn.disabled=true;
+  btn.textContent='Suppression...';
+  try{
+    await fetch(SB_URL+'/rest/v1/restock_requests?id=in.('+ids.join(',')+')',{
+      method:'PATCH',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':SB_KEY,
+        'Authorization':'Bearer '+SB_KEY,
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify({notifie:true,notifie_at:new Date().toISOString()})
+    });
+    showToast('Demandes supprimées !');
+    document.getElementById('dlg').close();
+    loadData();
+  }catch(e){
+    btn.disabled=false;
+    btn.textContent='Supprimer ces demandes';
+    showToast('Erreur — réessaye');
+  }
 }
-function switchTab(n){
-  document.getElementById('tab-coloris').style.display=n==='coloris'?'block':'none';
-  document.getElementById('tab-all').style.display=n==='all'?'block':'none';
-  document.getElementById('tab-btn-coloris').classList.toggle('is-active',n==='coloris');
-  document.getElementById('tab-btn-all').classList.toggle('is-active',n==='all');
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2500);
 }
-function copyClip(text,msg){
-  if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){showToast(msg||'Copie !');});}
-  else{var el=document.createElement('textarea');el.value=text;el.style.cssText='position:fixed;opacity:0';document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);showToast(msg||'Copie !');}
-}
-var _tt;
-function showToast(msg,isErr){
-  var t=document.getElementById('toast');t.textContent=msg;t.style.borderColor=isErr?'rgba(220,38,38,.5)':'rgba(22,163,74,.5)';
-  t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},3200);
-}
-if(sessionStorage.getItem('rv_admin')==='1'){document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';loadData();}
 </script>
 </body>
 </html>
