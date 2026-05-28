@@ -1,0 +1,313 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAVAGER - Admin Reassorts</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#04060d;color:#e6e8ee;min-height:100vh}
+    #login{display:flex;align-items:center;justify-content:center;min-height:100vh}
+    .login-box{background:#0a0d18;border:1px solid rgba(255,42,127,.25);border-radius:20px;padding:40px 36px;width:100%;max-width:380px;text-align:center;box-shadow:0 0 60px rgba(255,42,127,.12)}
+    .login-logo{font-size:28px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;background:linear-gradient(135deg,#fff 30%,#ff2a7f 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+    .login-sub{color:#8b90a0;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:28px}
+    .login-input{width:100%;padding:13px 16px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;font-size:14px;color:#fff;outline:none;margin-bottom:12px;font-family:inherit}
+    .login-input:focus{border-color:#ff2a7f}
+    .login-btn{width:100%;padding:14px;background:linear-gradient(135deg,#ff2a7f,#ff5e3a);border:none;border-radius:10px;font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#fff;cursor:pointer}
+    .login-btn:hover{filter:brightness(1.1)}
+    .login-err{color:#f87171;font-size:12px;margin-top:8px;display:none}
+    #app{display:none}
+    .header{background:#0a0d18;border-bottom:1px solid rgba(255,255,255,.08);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    .header-logo{font-size:18px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;background:linear-gradient(135deg,#fff 30%,#ff2a7f 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .header-sub{font-size:11px;color:#8b90a0;letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+    .header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .btn-h{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.06em}
+    .btn-refresh{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff}
+    .btn-refresh:hover{background:rgba(255,255,255,.1)}
+    .btn-logout{background:rgba(255,42,127,.1);border:1px solid rgba(255,42,127,.3);color:#ff2a7f}
+    .btn-logout:hover{background:rgba(255,42,127,.18)}
+    .content{padding:28px;max-width:1280px;margin:0 auto}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+    .stat-card{background:#0a0d18;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 20px}
+    .stat-num{font-size:32px;font-weight:900;color:#fff;line-height:1}
+    .stat-label{font-size:11px;color:#8b90a0;letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+    .stat-card.accent{border-color:rgba(255,42,127,.3)}
+    .stat-card.accent .stat-num{color:#ff2a7f}
+    .tabs{display:flex;gap:2px;margin-bottom:22px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:3px;width:fit-content}
+    .tab{padding:9px 22px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#8b90a0;border:none;background:none;font-family:inherit}
+    .tab.is-active{background:rgba(255,42,127,.12);color:#fff}
+    .coloris-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+    .coloris-card{background:#0a0d18;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}
+    .coloris-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .coloris-name{font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff}
+    .coloris-count{background:rgba(255,42,127,.12);border:1px solid rgba(255,42,127,.3);color:#ff2a7f;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px}
+    .coloris-count.all-done{background:rgba(22,163,74,.1);border-color:rgba(22,163,74,.3);color:#16a34a}
+    .coloris-meta{font-size:10px;color:#8b90a0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+    .coloris-emails{font-size:11px;color:#8b90a0;margin-bottom:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .coloris-actions{display:flex;gap:8px}
+    .btn-bcc{flex:1;padding:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;font-family:inherit;text-align:center}
+    .btn-bcc:hover{background:rgba(255,255,255,.1)}
+    .btn-notify{flex:1;padding:9px;background:linear-gradient(135deg,#ff2a7f,#ff5e3a);border:none;border-radius:8px;color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;font-family:inherit;text-align:center}
+    .btn-notify:hover{filter:brightness(1.1)}
+    .btn-notify.done{background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);color:#16a34a}
+    .filter-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+    .filter-input{padding:10px 14px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-size:13px;font-family:inherit;outline:none;flex:1;min-width:180px}
+    .filter-input:focus{border-color:#ff2a7f}
+    .filter-select{padding:10px 14px;background:#0a0d18;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-size:13px;font-family:inherit;outline:none;cursor:pointer}
+    table{width:100%;border-collapse:collapse}
+    thead th{background:rgba(255,255,255,.04);padding:10px 14px;text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8b90a0;font-weight:700;border-bottom:1px solid rgba(255,255,255,.06)}
+    tbody tr{border-bottom:1px solid rgba(255,255,255,.04)}
+    tbody tr:hover{background:rgba(255,255,255,.02)}
+    tbody td{padding:11px 14px;font-size:13px;color:#e6e8ee;vertical-align:middle}
+    .td-date{color:#8b90a0;font-size:11px}
+    .badge{display:inline-flex;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700}
+    .badge-pending{background:rgba(255,42,127,.1);color:#ff2a7f;border:1px solid rgba(255,42,127,.25)}
+    .badge-done{background:rgba(22,163,74,.1);color:#16a34a;border:1px solid rgba(22,163,74,.25)}
+    .row-actions{display:flex;gap:6px}
+    .btn-row{padding:5px 10px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer;font-family:inherit;white-space:nowrap}
+    .btn-check{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);color:#16a34a}
+    .btn-check:hover{background:rgba(22,163,74,.2)}
+    .btn-del{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.25);color:#f87171}
+    .btn-del:hover{background:rgba(220,38,38,.2)}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.is-open{display:flex}
+    .modal-box{background:#0e1120;border:1px solid rgba(255,42,127,.25);border-radius:20px;padding:32px 28px 26px;max-width:640px;width:100%;position:relative;max-height:90vh;overflow-y:auto}
+    .modal-title{font-size:18px;font-weight:900;color:#fff;margin-bottom:6px}
+    .modal-sub{font-size:12px;color:#8b90a0;margin-bottom:20px}
+    .modal-x{position:absolute;top:14px;right:14px;width:32px;height:32px;background:rgba(255,255,255,.07);border:none;border-radius:50%;color:#aaa;font-size:18px;cursor:pointer;display:grid;place-items:center}
+    .modal-x:hover{background:rgba(255,255,255,.15);color:#fff}
+    .modal-label{font-size:11px;color:#8b90a0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;margin-top:14px}
+    .modal-bcc-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:12px;color:#e6e8ee;word-break:break-all;max-height:80px;overflow-y:auto;line-height:1.6}
+    .modal-input{width:100%;padding:11px 13px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;color:#fff;outline:none;font-family:inherit}
+    .modal-input:focus{border-color:#ff2a7f}
+    textarea.modal-input{resize:vertical;min-height:130px;line-height:1.6}
+    .modal-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+    .btn-modal{flex:1;padding:12px;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:inherit;min-width:130px}
+    .btn-gmail{background:linear-gradient(135deg,#ff2a7f,#ff5e3a);border:none;color:#fff}
+    .btn-gmail:hover{filter:brightness(1.1)}
+    .btn-copy-bcc{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff}
+    .btn-copy-bcc:hover{background:rgba(255,255,255,.1)}
+    .btn-mark-all{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.3);color:#16a34a}
+    .btn-mark-all:hover{background:rgba(22,163,74,.18)}
+    .loading{text-align:center;padding:48px;color:#8b90a0;font-size:14px}
+    .toast{position:fixed;bottom:24px;right:24px;background:#0e1120;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 18px;font-size:13px;color:#fff;box-shadow:0 8px 30px rgba(0,0,0,.5);z-index:9999;transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none}
+    .toast.show{transform:none;opacity:1}
+    @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.content{padding:14px}.modal-actions{flex-direction:column}}
+  </style>
+</head>
+<body>
+<div id="login">
+  <div class="login-box">
+    <div class="login-logo">RAVAGER</div>
+    <div class="login-sub">Admin &middot; Demandes de reassort</div>
+    <input type="password" id="pwd-input" class="login-input" placeholder="Mot de passe" autocomplete="current-password">
+    <button class="login-btn" onclick="tryLogin()">Acceder au tableau de bord</button>
+    <div class="login-err" id="login-err">Mot de passe incorrect.</div>
+  </div>
+</div>
+<div id="app">
+  <div class="header">
+    <div><div class="header-logo">RAVAGER</div><div class="header-sub">Admin &middot; Demandes de reassort</div></div>
+    <div class="header-right">
+      <span style="font-size:11px;color:#8b90a0" id="last-refresh"></span>
+      <button class="btn-h btn-refresh" onclick="loadData()">&#8635; Actualiser</button>
+      <button class="btn-h btn-logout" onclick="logout()">Deconnexion</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stats">
+      <div class="stat-card"><div class="stat-num" id="stat-total">-</div><div class="stat-label">Demandes totales</div></div>
+      <div class="stat-card accent"><div class="stat-num" id="stat-pending">-</div><div class="stat-label">A notifier</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-coloris">-</div><div class="stat-label">Coloris en rupture</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-today">-</div><div class="stat-label">Aujourd'hui</div></div>
+    </div>
+    <div class="tabs">
+      <button class="tab is-active" id="tab-btn-coloris" onclick="switchTab('coloris')">Par coloris</button>
+      <button class="tab" id="tab-btn-all" onclick="switchTab('all')">Toutes les demandes</button>
+    </div>
+    <div id="tab-coloris"><div class="coloris-grid" id="coloris-grid"><div class="loading">Chargement...</div></div></div>
+    <div id="tab-all" style="display:none">
+      <div class="filter-row">
+        <input type="text" class="filter-input" id="filter-search" placeholder="Rechercher..." oninput="renderTable()">
+        <select class="filter-select" id="filter-status" onchange="renderTable()">
+          <option value="">Tous statuts</option><option value="pending">A notifier</option><option value="done">Notifies</option>
+        </select>
+        <select class="filter-select" id="filter-produit" onchange="renderTable()">
+          <option value="">Tous produits</option><option value="SHAD">SHAD</option><option value="Corps souple">Corps souple</option><option value="Tete plombee">Tete plombee</option>
+        </select>
+      </div>
+      <div id="table-wrap"><div class="loading">Chargement...</div></div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="notify-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <button class="modal-x" onclick="closeModal()">x</button>
+    <div class="modal-title">Notifier &mdash; <span id="modal-coloris-name"></span></div>
+    <div class="modal-sub" id="modal-sub"></div>
+    <div class="modal-label">Adresses BCC</div>
+    <div class="modal-bcc-box" id="modal-bcc-text"></div>
+    <div class="modal-label">Sujet</div>
+    <input type="text" class="modal-input" id="modal-subject">
+    <div class="modal-label">Message</div>
+    <textarea class="modal-input" id="modal-body"></textarea>
+    <div class="modal-actions">
+      <button class="btn-modal btn-copy-bcc" onclick="copyBcc()">Copier BCC</button>
+      <button class="btn-modal btn-gmail" onclick="openGmail()">Ouvrir Gmail</button>
+      <button class="btn-modal btn-mark-all" onclick="markAllNotified()">Marquer tous notifies</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var SB_URL='https://xvyilbmlfvgriicpawex.supabase.co';
+var SB_KEY='sb_publishable_-o9r10Tuo6Qu6v2xNkPLMQ_EL_xUpCF';
+var PWD='ravager2026';
+var SB_HDR={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+var allData=[];var modalIds=[];
+function tryLogin(){
+  if(document.getElementById('pwd-input').value===PWD){sessionStorage.setItem('rv_admin','1');document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';loadData();}
+  else{document.getElementById('login-err').style.display='block';}
+}
+document.getElementById('pwd-input').addEventListener('keydown',function(e){if(e.key==='Enter')tryLogin();});
+function logout(){sessionStorage.removeItem('rv_admin');document.getElementById('login').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('pwd-input').value='';}
+function loadData(){
+  fetch(SB_URL+'/rest/v1/restock_requests?select=*&order=created_at.desc',{headers:SB_HDR})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      allData=Array.isArray(data)?data:[];
+      updateStats();renderColorisGrid();renderTable();
+      var now=new Date();document.getElementById('last-refresh').textContent='Actualise '+now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+    }).catch(function(e){showToast('Erreur Supabase: '+e.message,true);});
+}
+function updateStats(){
+  var total=allData.length,pending=allData.filter(function(r){return !r.notifie;}).length;
+  var today=new Date().toISOString().slice(0,10);
+  var todayCnt=allData.filter(function(r){return r.created_at&&r.created_at.slice(0,10)===today;}).length;
+  var cset={};allData.filter(function(r){return !r.notifie;}).forEach(function(r){cset[(r.coloris||'?')+'|'+(r.produit||'')]=1;});
+  document.getElementById('stat-total').textContent=total;document.getElementById('stat-pending').textContent=pending;
+  document.getElementById('stat-coloris').textContent=Object.keys(cset).length;document.getElementById('stat-today').textContent=todayCnt;
+}
+function renderColorisGrid(){
+  var grid=document.getElementById('coloris-grid');
+  var groups={};
+  allData.forEach(function(r){var k=(r.coloris||'?')+'||'+(r.produit||'SHAD');if(!groups[k])groups[k]={coloris:r.coloris||'?',produit:r.produit||'SHAD',rows:[]};groups[k].rows.push(r);});
+  var keys=Object.keys(groups).sort();
+  while(grid.firstChild)grid.removeChild(grid.firstChild);
+  if(!keys.length){var m=document.createElement('div');m.style.cssText='color:#8b90a0;text-align:center;padding:40px;grid-column:1/-1';m.textContent='Aucune demande.';grid.appendChild(m);return;}
+  keys.forEach(function(key){
+    var g=groups[key];
+    var pending=g.rows.filter(function(r){return !r.notifie;});
+    var allDone=pending.length===0;
+    var emailList=[];var seen={};g.rows.forEach(function(r){if(r.email&&!seen[r.email]){emailList.push(r.email);seen[r.email]=1;}});
+    var emailsStr=emailList.join(', ');
+    var card=document.createElement('div');card.className='coloris-card';
+    var head=document.createElement('div');head.className='coloris-card-head';
+    var nm=document.createElement('div');nm.className='coloris-name';nm.textContent=g.coloris;
+    var cnt=document.createElement('div');cnt.className='coloris-count'+(allDone?' all-done':'');
+    cnt.textContent=allDone?'Tous notifies':pending.length+' en attente';
+    head.appendChild(nm);head.appendChild(cnt);
+    var meta=document.createElement('div');meta.className='coloris-meta';meta.textContent=g.produit+' - '+g.rows.length+' demande'+(g.rows.length>1?'s':'');
+    var ems=document.createElement('div');ems.className='coloris-emails';ems.title=emailsStr;ems.textContent=emailsStr.length>60?emailsStr.slice(0,57)+'...':(emailsStr||'Aucun email');
+    var acts=document.createElement('div');acts.className='coloris-actions';
+    var bBtn=document.createElement('button');bBtn.className='btn-bcc';bBtn.textContent='Copier BCC';
+    (function(em){bBtn.onclick=function(){copyClip(em.join(','),'BCC copie !');};} )(emailList);
+    var nBtn=document.createElement('button');nBtn.className='btn-notify'+(allDone?' done':'');nBtn.textContent=allDone?'Deja notifies':'Notifier';
+    (function(c,p,rows){nBtn.onclick=function(){openNotifyModal(c,p,rows);};} )(g.coloris,g.produit,g.rows);
+    acts.appendChild(bBtn);acts.appendChild(nBtn);
+    card.appendChild(head);card.appendChild(meta);card.appendChild(ems);card.appendChild(acts);grid.appendChild(card);
+  });
+}
+function renderTable(){
+  var wrap=document.getElementById('table-wrap');
+  var search=(document.getElementById('filter-search').value||'').toLowerCase();
+  var status=document.getElementById('filter-status').value;
+  var produit=document.getElementById('filter-produit').value;
+  var rows=allData.filter(function(r){
+    if(search){var h=((r.prenom||'')+' '+(r.nom||'')+' '+(r.email||'')+' '+(r.coloris||'')).toLowerCase();if(h.indexOf(search)<0)return false;}
+    if(status==='pending'&&r.notifie)return false;if(status==='done'&&!r.notifie)return false;
+    if(produit&&r.produit!==produit)return false;return true;
+  });
+  while(wrap.firstChild)wrap.removeChild(wrap.firstChild);
+  if(!rows.length){var m=document.createElement('div');m.style.cssText='color:#8b90a0;text-align:center;padding:40px';m.textContent='Aucun resultat.';wrap.appendChild(m);return;}
+  var tbl=document.createElement('table');
+  var thead=document.createElement('thead');var htr=document.createElement('tr');
+  ['Date','Prenom / Nom','Email','Coloris','Produit','Taille','Statut','Actions'].forEach(function(h){var th=document.createElement('th');th.textContent=h;htr.appendChild(th);});
+  thead.appendChild(htr);tbl.appendChild(thead);
+  var tbody=document.createElement('tbody');
+  rows.forEach(function(r){
+    var tr=document.createElement('tr');
+    var dt=r.created_at?new Date(r.created_at):null;
+    var dtStr=dt?dt.toLocaleDateString('fr-FR')+' '+dt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):'--';
+    var fns=[
+      function(td){td.className='td-date';td.textContent=dtStr;},
+      function(td){td.textContent=([r.prenom,r.nom].filter(Boolean).join(' '))||'--';},
+      function(td){td.textContent=r.email||'--';},
+      function(td){var s=document.createElement('strong');s.textContent=r.coloris||'--';td.appendChild(s);},
+      function(td){td.textContent=r.produit||'SHAD';},
+      function(td){td.textContent=r.taille||'--';},
+      function(td){var b=document.createElement('span');b.className='badge '+(r.notifie?'badge-done':'badge-pending');b.textContent=r.notifie?'Notifie':'En attente';td.appendChild(b);},
+      function(td){
+        var div=document.createElement('div');div.className='row-actions';
+        if(!r.notifie){var c=document.createElement('button');c.className='btn-row btn-check';c.textContent='Notifie';(function(id){c.onclick=function(){markNotified(id);};})(r.id);div.appendChild(c);}
+        var d=document.createElement('button');d.className='btn-row btn-del';d.textContent='Suppr.';(function(id){d.onclick=function(){deleteRow(id);};})(r.id);div.appendChild(d);td.appendChild(div);
+      }
+    ];
+    fns.forEach(function(fn){var td=document.createElement('td');fn(td);tr.appendChild(td);});tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);wrap.appendChild(tbl);
+}
+function openNotifyModal(coloris,produit,rows){
+  var pending=rows.filter(function(r){return !r.notifie;});
+  var emailList=[];var seen={};rows.forEach(function(r){if(r.email&&!seen[r.email]){emailList.push(r.email);seen[r.email]=1;}});
+  modalIds=pending.map(function(r){return r.id;});
+  document.getElementById('modal-coloris-name').textContent=coloris+' ('+produit+')';
+  document.getElementById('modal-sub').textContent=emailList.length+' destinataire'+(emailList.length>1?'s':'')+' - '+pending.length+' encore en attente';
+  document.getElementById('modal-bcc-text').textContent=emailList.join(', ');
+  document.getElementById('modal-subject').value='RAVAGER - Coloris '+coloris+' de retour en stock !';
+  document.getElementById('modal-body').value='Bonjour,\n\nBonne nouvelle ! Le coloris '+coloris+' que vous attendiez est a nouveau disponible.\n\nCommandez maintenant : https://ravager-1041.myshopify.com\n\nStocks limites - soyez rapide !\n\nL\'equipe RAVAGER';
+  document.getElementById('notify-modal').classList.add('is-open');
+}
+function closeModal(){document.getElementById('notify-modal').classList.remove('is-open');}
+function copyBcc(){copyClip(document.getElementById('modal-bcc-text').textContent,'BCC copie !');}
+function openGmail(){
+  var bcc=document.getElementById('modal-bcc-text').textContent;
+  var sub=encodeURIComponent(document.getElementById('modal-subject').value);
+  var body=encodeURIComponent(document.getElementById('modal-body').value);
+  var emails=bcc.split(',').map(function(e){return e.trim();}).filter(Boolean);
+  window.open('https://mail.google.com/mail/?view=cm&bcc='+encodeURIComponent(emails.join(','))+'&su='+sub+'&body='+body,'_blank');
+}
+function markAllNotified(){
+  if(!modalIds.length){showToast('Tous deja notifies.');return;}
+  var now=new Date().toISOString();
+  var ps=modalIds.map(function(id){return fetch(SB_URL+'/rest/v1/restock_requests?id=eq.'+id,{method:'PATCH',headers:SB_HDR,body:JSON.stringify({notifie:true,notifie_at:now})});});
+  Promise.all(ps).then(function(){showToast(modalIds.length+' marque'+(modalIds.length>1?'s':'')+' notifie'+(modalIds.length>1?'s':'')+' !');closeModal();loadData();}).catch(function(e){showToast('Erreur: '+e.message,true);});
+}
+function markNotified(id){
+  fetch(SB_URL+'/rest/v1/restock_requests?id=eq.'+id,{method:'PATCH',headers:SB_HDR,body:JSON.stringify({notifie:true,notifie_at:new Date().toISOString()})})
+    .then(function(){showToast('Marque notifie !');loadData();}).catch(function(e){showToast('Erreur: '+e.message,true);});
+}
+function deleteRow(id){
+  if(!confirm('Supprimer cette demande ?'))return;
+  fetch(SB_URL+'/rest/v1/restock_requests?id=eq.'+id,{method:'DELETE',headers:SB_HDR})
+    .then(function(){showToast('Supprime.');loadData();}).catch(function(e){showToast('Erreur: '+e.message,true);});
+}
+function switchTab(n){
+  document.getElementById('tab-coloris').style.display=n==='coloris'?'block':'none';
+  document.getElementById('tab-all').style.display=n==='all'?'block':'none';
+  document.getElementById('tab-btn-coloris').classList.toggle('is-active',n==='coloris');
+  document.getElementById('tab-btn-all').classList.toggle('is-active',n==='all');
+}
+function copyClip(text,msg){
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){showToast(msg||'Copie !');});}
+  else{var el=document.createElement('textarea');el.value=text;el.style.cssText='position:fixed;opacity:0';document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);showToast(msg||'Copie !');}
+}
+var _tt;
+function showToast(msg,isErr){
+  var t=document.getElementById('toast');t.textContent=msg;t.style.borderColor=isErr?'rgba(220,38,38,.5)':'rgba(22,163,74,.5)';
+  t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},3200);
+}
+if(sessionStorage.getItem('rv_admin')==='1'){document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';loadData();}
+</script>
+</body>
+</html>
