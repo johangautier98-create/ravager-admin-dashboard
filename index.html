@@ -219,7 +219,7 @@ function renderMatrix(){
   var colorsSet=new Set();
   data.forEach(function(r){
     if(r.taille)sizesSet.add(r.taille);
-    if(r.coloris)colorsSet.add(r.coloris);
+    if(r.coloris&&r.coloris!=='ce coloris')colorsSet.add(r.coloris);
   });
 
   var sizes=[...sizesSet].sort(function(a,b){
@@ -336,14 +336,25 @@ function openModal(size, color){
   customers.forEach(function(c){
     var row=document.createElement('div');
     row.className='customer-row';
+    var info=document.createElement('div');
+    info.style.cssText='display:flex;flex-direction:column;gap:2px;flex:1;min-width:0';
     var nm=document.createElement('span');
     nm.className='c-name';
     nm.textContent=((c.prenom||'')+' '+(c.nom||'')).trim()||'—';
     var em=document.createElement('span');
     em.className='c-email';
     em.textContent=c.email||'';
-    row.appendChild(nm);
-    row.appendChild(em);
+    info.appendChild(nm);
+    info.appendChild(em);
+    var delBtn=document.createElement('button');
+    delBtn.textContent='✕';
+    delBtn.title='Supprimer';
+    delBtn.style.cssText='background:#ef4444;border:none;color:#fff;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px;flex-shrink:0;margin-left:8px';
+    (function(id){
+      delBtn.onclick=function(){deleteOne(id);};
+    })(c.id);
+    row.appendChild(info);
+    row.appendChild(delBtn);
     list.appendChild(row);
   });
 
@@ -374,6 +385,19 @@ function copyTpl(){
   navigator.clipboard.writeText(t).then(function(){showToast('Message copié !');});
 }
 
+async function deleteOne(id){
+  try{
+    await fetch(SB_URL+'/rest/v1/restock_requests?id=eq.'+id,{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'return=minimal'},
+      body:JSON.stringify({notifie:true})
+    });
+    showToast('Client supprimé !');
+    document.getElementById('dlg').close();
+    loadData();
+  }catch(e){ showToast('Erreur — réessaye'); }
+}
+
 async function deleteReqs(ids){
   if(!ids.length)return;
   var btn=document.getElementById('dlg-del');
@@ -388,7 +412,7 @@ async function deleteReqs(ids){
         'Authorization':'Bearer '+SB_KEY,
         'Prefer':'return=minimal'
       },
-      body:JSON.stringify({notifie:true,notifie_at:new Date().toISOString()})
+      body:JSON.stringify({notifie:true})
     });
     showToast('Demandes supprimées !');
     document.getElementById('dlg').close();
